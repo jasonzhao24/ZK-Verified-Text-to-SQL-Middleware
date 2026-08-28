@@ -1,0 +1,19 @@
+cat > sql_guard.compact << 'EOF'
+pragma language_version >= 0.18.0;
+import CompactStandardLibrary;
+
+struct QueryMetadata {
+  query_hash: Bytes<32>,
+  is_safe_select: Boolean
+}
+
+export ledger verified_queries: Bytes<32>;
+
+witness ai_query_metadata(): QueryMetadata;
+
+export circuit verify_and_log_query(): [] {
+    const metadata = ai_query_metadata();
+    assert(metadata.is_safe_select, "Security violation: AI generated a modifying query.");
+    verified_queries = disclose(metadata.query_hash);
+}
+EOF
