@@ -15,7 +15,6 @@ if sys.platform == "win32":
     asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
 
 load_dotenv()
-print("DEBUG DATABASE_URL:", repr(os.getenv("DATABASE_URL")))
 app = FastAPI()
 
 from fastapi.middleware.cors import CORSMiddleware
