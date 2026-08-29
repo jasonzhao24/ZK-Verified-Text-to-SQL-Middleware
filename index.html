@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>sql_guard // Midnight</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@400;500;600;700&display=swap');
+  * { box-sizing: border-box; }
+  body {
+    font-family: 'Inter', sans-serif;
+    background: #050507;
+    color: #e4e4e7;
+    margin: 0;
+    min-height: 100vh;
+    background-image:
+      radial-gradient(circle at 20% 20%, rgba(124, 58, 237, 0.08), transparent 40%),
+      radial-gradient(circle at 80% 0%, rgba(56, 189, 248, 0.06), transparent 40%);
+  }
+  .wrap { max-width: 720px; margin: 0 auto; padding: 64px 24px; }
+  .badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-family: 'JetBrains Mono', monospace; font-size: 11px;
+    letter-spacing: 0.08em; text-transform: uppercase; color: #a78bfa;
+    background: rgba(124, 58, 237, 0.1); border: 1px solid rgba(124, 58, 237, 0.25);
+    padding: 4px 10px; border-radius: 100px; margin-bottom: 20px;
+  }
+  .badge::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: #a78bfa; }
+  h1 { font-size: 28px; font-weight: 700; letter-spacing: -0.02em; margin: 0 0 12px; line-height: 1.2; }
+  h1 span { color: #71717a; font-weight: 500; }
+  .sub { color: #a1a1aa; font-size: 15px; line-height: 1.6; max-width: 520px; margin-bottom: 36px; }
+  .console { background: #0a0a0d; border: 1px solid #1f1f27; border-radius: 12px; overflow: hidden; }
+  .console-head {
+    display: flex; align-items: center; gap: 6px; padding: 10px 14px;
+    border-bottom: 1px solid #1f1f27; font-family: 'JetBrains Mono', monospace;
+    font-size: 11px; color: #52525b;
+  }
+  .dot { width: 8px; height: 8px; border-radius: 50%; background: #2a2a33; }
+  .input-row { display: flex; padding: 16px; gap: 10px; }
+  input {
+    flex: 1; background: #131318; border: 1px solid #26262f; color: #f4f4f5;
+    font-family: 'JetBrains Mono', monospace; font-size: 14px; padding: 12px 14px;
+    border-radius: 8px; outline: none; transition: border-color 0.15s;
+  }
+  input:focus { border-color: #7c3aed; }
+  input::placeholder { color: #52525b; }
+  button {
+    background: linear-gradient(135deg, #7c3aed, #6d28d9); color: white; border: none;
+    font-family: 'Inter', sans-serif; font-weight: 600; font-size: 14px;
+    padding: 0 22px; border-radius: 8px; cursor: pointer; transition: opacity 0.15s;
+  }
+  button:hover { opacity: 0.9; }
+  button:active { transform: scale(0.98); }
+  .result { padding: 0 16px 16px; }
+  .verdict {
+    display: flex; align-items: center; gap: 8px;
+    font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 500;
+    padding: 10px 12px; border-radius: 8px; margin-bottom: 10px;
+  }
+  .verdict.pass { background: rgba(16, 185, 129, 0.08); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.2); }
+  .verdict.fail { background: rgba(244, 63, 94, 0.08); color: #fb7185; border: 1px solid rgba(244, 63, 94, 0.2); }
+  pre {
+    background: #131318; border: 1px solid #26262f; border-radius: 8px; padding: 14px;
+    font-family: 'JetBrains Mono', monospace; font-size: 12.5px; line-height: 1.6;
+    color: #d4d4d8; overflow-x: auto; white-space: pre-wrap; word-break: break-word; margin: 0;
+  }
+  .steps { display: flex; gap: 8px; margin-top: 36px; flex-wrap: wrap; }
+  .step {
+    font-family: 'JetBrains Mono', monospace; font-size: 11px; color: #71717a;
+    background: #0a0a0d; border: 1px solid #1f1f27; padding: 6px 10px; border-radius: 6px;
+  }
+  .step b { color: #a1a1aa; }
+  .hint { color: #52525b; font-size: 12px; margin-top: 10px; font-family: 'JetBrains Mono', monospace; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="badge">Midnight · Compact ZK Circuit</div>
+  <h1>sql_guard<span> — AI queries, cryptographically checked</span></h1>
+  <p class="sub">An LLM turns your question into SQL. Before it ever touches the database, a compiled zero-knowledge circuit proves the query is read-only — no trust required.</p>
+  <div class="console">
+    <div class="console-head"><span class="dot"></span> ask-database</div>
+    <div class="input-row">
+      <input id="prompt" placeholder="Show me all active users" />
+      <button onclick="ask()">Run</button>
+    </div>
+    <div class="result" id="output"></div>
+  </div>
+  <div class="steps">
+    <div class="step"><b>1.</b> LLM → SQL</div>
+    <div class="step"><b>2.</b> SHA-256 hash</div>
+    <div class="step"><b>3.</b> ZK circuit assert</div>
+    <div class="step"><b>4.</b> Postgres execute</div>
+  </div>
+</div>
+<script>
+  async function ask() {
+    const prompt = document.getElementById('prompt').value;
+    const output = document.getElementById('output');
+    if (!prompt) return;
+    output.innerHTML = '<div class="hint">running query...</div>';
+    try {
+      const res = await fetch('http://127.0.0.1:8000/ask-database', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ natural_language: prompt })
+      });
+      const data = await res.json();
+      const pass = res.status === 200;
+      output.innerHTML = `
+        <div class="verdict ${pass ? 'pass' : 'fail'}">
+          ${pass ? 'proof verified · query executed' : 'proof failed · query blocked'}
+        </div>
+        <pre>${JSON.stringify(data, null, 2)}</pre>
+      `;
+    } catch (err) {
+      output.innerHTML = `<div class="verdict fail">${err.message} — is the server running?</div>`;
+    }
+  }
+  document.getElementById('prompt').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') ask();
+  });
+</script>
+</body>
+</html>
