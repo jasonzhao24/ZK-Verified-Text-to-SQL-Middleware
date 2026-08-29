@@ -1,4 +1,3 @@
-cat > sql_guard.compact << 'EOF'
 pragma language_version >= 0.18.0;
 import CompactStandardLibrary;
 
@@ -16,4 +15,3 @@ export circuit verify_and_log_query(): [] {
     assert(metadata.is_safe_select, "Security violation: AI generated a modifying query.");
     verified_queries = disclose(metadata.query_hash);
 }
-EOF

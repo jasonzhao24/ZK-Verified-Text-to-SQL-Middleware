@@ -1,0 +1,8 @@
+{
+  "version": 3,
+  "file": "index.js",
+  "sourceRoot": "../../../",
+  "sources": ["sql_guard.compact"],
+  "names": [],
+  "mappings": ";;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;EAAA;;;;;;;;;;;;;MAYA,AAAA,oBAIC;;;;;;;;;;;;;;;;;;;;;;OAAA;;;;;;;;GACA;EAjBD;;;;;;;;;;;;;;;;;;;;;;;;;;;;;IAQA;;;;;;;;;yEAA0C;;;;;;;GASzC;EAPD,AAAA,oBAA2C;;0DAA3C,iBAA2C;;;;;;;;;;;;;;GAAA;EAE3C,AAAA,uBAIC;UAHS,UAA8B;4BAC7B,UAAQ;;UACf,KAAgB,GAAY,UAAQ;IAApC;;;;;;;2HAAA,KAAgB;;yEAAA;;GACnB;;;;;;;;;;;;;;;;IARD;qCAAA;;;;;;;;;;;0GAA0C;KAAA;;;;;;;;;;;;"
+}
